@@ -4,7 +4,7 @@ module.exports = {
 		"option2": "value",
 		"optionn": "n"
 	},
-	"before_execute": [
+	"before": [
 		{
 			"name": "processor1",
 			"func": function (processor, task) {
@@ -16,9 +16,7 @@ module.exports = {
 			"func": function (processor, task) {
 				console.log('before_execute_process_flow <' + processor + '> is executing along with the value: <' + task.processor(processor) + '>.');
 			}
-		}
-	],
-	"before_execute_async": [
+		},
 		{
 			"name": "processor3",
 			"func": function (processor, task, callback) {
@@ -37,7 +35,7 @@ module.exports = {
 		let result = { body: 'this is a default result body' };
 		setTimeout(callback, 2000, error, result);
 	},
-	"after_execute": [
+	"after": [
 		{
 			"name": "processor4",
 			"func": function (processor, task) {

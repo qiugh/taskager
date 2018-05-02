@@ -1,15 +1,15 @@
 module.exports = {
-	"schedule_options": {
-		"noidle": 0
+	"scheduleOptions": {
+		"idle": 0
 	},
-	"channel_options": {
+	"channelOptions": {
 		"parallel": 5,
 		"ratelimit": 0,
 	},
-	"queue_options": {
+	"queueOptions": {
 		"priorityrange": 6
 	},
-	"share": {
+	"commonOptions": {
 		"retries": 3,
 		"delaytime": 2000
 	}

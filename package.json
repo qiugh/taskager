@@ -18,5 +18,8 @@
     "url": "https://github.com/qiugh/taskager/issues"
   },
   "homepage": "https://github.com/qiugh/taskager#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "jshint": "^2.9.5"
+  }
 }
