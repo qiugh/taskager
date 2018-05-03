@@ -1,27 +1,24 @@
-const fs = require('fs');
-const Path = require('path');
-const EventEmitter = require("events").EventEmitter;
-const Task = require(Path.resolve(__dirname, './lib/Task.js'));
-const Schedule = require(Path.resolve(__dirname, './lib/Schedule.js'));
+let fs = require('fs');
+let Path = require('path');
+let np = require('node-processor');
+let EventEmitter = require("events").EventEmitter;
+let Task = require(Path.resolve(__dirname, './lib/Task.js'));
+let Schedule = require(Path.resolve(__dirname, './lib/Schedule.js'));
 
+let Flow = np.Flow, Processor = np.Processor;
 const NOT_SET = 'Not Set';
 
 class Manager extends EventEmitter {
   constructor(options) {
     super();
-    options = (typeof options !== 'object' || options === null) ? {} : options;
-    this._initTaskAndManager(options.configFilesPath);
-    _overrideOptions(this.scheduleOptions, options, true);
-    _overrideOptions(this.channelOptions, options, true);
-    _overrideOptions(this.queueOptions, options, true);
-    _overrideOptions(this.commonOptions, options, true);
-    _overrideOptions(this.taskOptions, options, true);
+    options = options || {};
+    this.processFlow = new Flow();
+    this._initTaskAndManager(options);
     this.schedule = new Schedule(this.scheduleOptions);
   }
 
   addChannel(options) {
-    if (typeof options !== 'object' || options === null || !(options.hasOwnProperty('channel')))
-      throw new Error('options should be a object which has own properties such as "channel"、"ratelimit"、"parallel"');
+    options = options || {};
     enrichOptions(options, this.channelOptions);
     this.schedule.addChannel(options);
   }
@@ -31,6 +28,10 @@ class Manager extends EventEmitter {
     if (!this.schedule.getUnfinished_task_num()) {
       this.emit('drain');
     }
+  }
+
+  getProcessFlow(){
+    return this.processFlow;
   }
 
   getChannelOptions() {
@@ -44,9 +45,9 @@ class Manager extends EventEmitter {
   getCommonOptions() {
     return this.commonOptions;
   }
-  _initTaskAndManager(configFilesPath) {
+  _initTaskAndManager(options) {
     let self = this;
-    let [taskConfig, managerConfig] = _readConfigFiles(configFilesPath);
+    let [taskConfig, managerConfig] = _readConfigFiles(options.configFilesPath);
 
     self.commonOptions = managerConfig.commonOptions;
     self.queueOptions = managerConfig.queueOptions;
@@ -54,11 +55,15 @@ class Manager extends EventEmitter {
     self.scheduleOptions = managerConfig.scheduleOptions;
     self.taskOptions = taskConfig.options;
 
-    ['before', 'after'].forEach(function (stage) {
-      taskConfig[stage].forEach(processor => {
-        self.commonOptions[processor.name] = NOT_SET;
-      })
+    taskConfig.processors.forEach(processor => {
+      self.commonOptions[processor.name] = NOT_SET;
+      self.processFlow.add(new Processor(processor));
     });
+    _overrideOptions(self.scheduleOptions, options, true);
+    _overrideOptions(self.channelOptions, options, true);
+    _overrideOptions(self.queueOptions, options, true);
+    _overrideOptions(self.commonOptions, options, true);
+    _overrideOptions(self.taskOptions, options, true);
   }
 
   queue(taskOptions, callback) {
@@ -84,7 +89,7 @@ class Manager extends EventEmitter {
 
   _regist(task) {
     task.manager = this;
-    self.schedule.enqueue(task);
+    this.schedule.enqueue(task);
   }
 }
 
@@ -146,9 +151,9 @@ function _readConfigFiles(configFilesPath) {
   if (fs.existsSync(managerConfig)) {
     managerConfig = require(managerConfig);
   } else {
-    managerConfig = require(Path.resolve(__dirname, './config/') + '/worker.js');
+    managerConfig = require(Path.resolve(__dirname, './config/') + '/manager.js');
   }
   return [taskConfig, managerConfig];
 }
 
-module.exports = Worker;
+module.exports = Manager;

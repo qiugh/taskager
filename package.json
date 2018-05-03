@@ -20,6 +20,7 @@
   "homepage": "https://github.com/qiugh/taskager#readme",
   "description": "",
   "dependencies": {
-    "jshint": "^2.9.5"
+    "jshint": "^2.9.5",
+    "node-processor": "0.0.3"
   }
 }
