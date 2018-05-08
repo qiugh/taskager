@@ -17,55 +17,6 @@ class Manager extends EventEmitter {
     this.schedule = new Schedule(this.scheduleOptions);
   }
 
-  addChannel(options) {
-    options = options || {};
-    enrichOptions(options, this.channelOptions);
-    this.schedule.addChannel(options);
-  }
-
-  done(channel) {
-    this.schedule.done(channel);
-    if (!this.schedule.getUnfinished_task_num()) {
-      this.emit('drain');
-    }
-  }
-
-  getProcessFlow(){
-    return this.processFlow;
-  }
-
-  getChannelOptions() {
-    return this.channelOptions;
-  }
-
-  getQueueOptions() {
-    return this.queueOptions;
-  }
-
-  getCommonOptions() {
-    return this.commonOptions;
-  }
-  _initTaskAndManager(options) {
-    let self = this;
-    let [taskConfig, managerConfig] = _readConfigFiles(options.configFilesPath);
-
-    self.commonOptions = managerConfig.commonOptions;
-    self.queueOptions = managerConfig.queueOptions;
-    self.channelOptions = managerConfig.channelOptions;
-    self.scheduleOptions = managerConfig.scheduleOptions;
-    self.taskOptions = taskConfig.options;
-
-    taskConfig.processors.forEach(processor => {
-      self.commonOptions[processor.name] = NOT_SET;
-      self.processFlow.add(new Processor(processor));
-    });
-    _overrideOptions(self.scheduleOptions, options, true);
-    _overrideOptions(self.channelOptions, options, true);
-    _overrideOptions(self.queueOptions, options, true);
-    _overrideOptions(self.commonOptions, options, true);
-    _overrideOptions(self.taskOptions, options, true);
-  }
-
   queue(taskOptions, callback) {
     let self = this;
     taskOptions = taskOptions || {};
@@ -87,9 +38,59 @@ class Manager extends EventEmitter {
     });
   }
 
+  addChannel(options) {
+    options = options || {};
+    enrichOptions(options, this.channelOptions);
+    this.schedule.addChannel(options);
+  }
+
+  getProcessFlow() {
+    return this.processFlow;
+  }
+
+  getChannelOptions() {
+    return this.channelOptions;
+  }
+
+  getQueueOptions() {
+    return this.queueOptions;
+  }
+
+  getCommonOptions() {
+    return this.commonOptions;
+  }
+
+  _initTaskAndManager(options) {
+    let self = this;
+    let [taskConfig, managerConfig] = _readConfigFiles(options.configFilesPath);
+
+    self.commonOptions = managerConfig.commonOptions;
+    self.queueOptions = managerConfig.queueOptions;
+    self.channelOptions = managerConfig.channelOptions;
+    self.scheduleOptions = managerConfig.scheduleOptions;
+    self.taskOptions = taskConfig.options;
+
+    taskConfig.processors.forEach(processor => {
+      self.commonOptions[processor.name] = NOT_SET;
+      self.processFlow.add(new Processor(processor));
+    });
+    _overrideOptions(self.scheduleOptions, options, true);
+    _overrideOptions(self.channelOptions, options, true);
+    _overrideOptions(self.queueOptions, options, true);
+    _overrideOptions(self.commonOptions, options, true);
+    _overrideOptions(self.taskOptions, options, true);
+  }
+
   _regist(task) {
     task.manager = this;
     this.schedule.enqueue(task);
+  }
+
+  _done(channel) {
+    this.schedule.done(channel);
+    if (!this.schedule.getUnfinished_task_num()) {
+      this.emit('drain');
+    }
   }
 }
 
