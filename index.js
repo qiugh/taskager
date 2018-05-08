@@ -44,6 +44,22 @@ class Manager extends EventEmitter {
     this.schedule.addChannel(options);
   }
 
+  addProcessor(options, anchor, around) {
+    let idx;
+    let processors = this.processFlow.processors;
+    for (let i = 0; i < processors.length; i++) {
+      if (processors[i].name === anchor) {
+        idx = i;
+        break;
+      }
+    }
+    if (idx === undefined) return;
+    if (!around || isNaN(Number(around))) {
+      around = 0;
+    }
+    processors.splice(idx + around, 0, new Processor(options));
+  }
+
   getProcessFlow() {
     return this.processFlow;
   }
