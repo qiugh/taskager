@@ -1,10 +1,10 @@
 module.exports = {
   "scheduleOptions": {
-    "idle": 0
+    "loadbalance": 0
   },
   "channelOptions": {
-    "parallel": 5,
-    "rate": 0,
+    "concurrency": 5,
+    "ratelimit": 0,
   },
   "queueOptions": {
     "priorityrange": 6

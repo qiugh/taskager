@@ -57,7 +57,7 @@ class Manager extends EventEmitter {
     if (!around || isNaN(Number(around))) {
       around = 0;
     }
-    processors.splice(idx + around, 0, new Processor(options));
+    this.processFlow.add(new Processor(options), idx + around);
   }
 
   getProcessFlow() {
@@ -86,10 +86,12 @@ class Manager extends EventEmitter {
     self.scheduleOptions = managerConfig.scheduleOptions;
     self.taskOptions = taskConfig.options;
 
-    taskConfig.processors.forEach(processor => {
-      self.commonOptions[processor.name] = NOT_SET;
-      self.processFlow.add(new Processor(processor));
-    });
+    if (taskConfig.processors instanceof Array) {
+      taskConfig.processors.forEach(processor => {
+        self.commonOptions[processor.name] = NOT_SET;
+        self.processFlow.add(new Processor(processor));
+      });
+    }
     _overrideOptions(self.scheduleOptions, options, true);
     _overrideOptions(self.channelOptions, options, true);
     _overrideOptions(self.queueOptions, options, true);
@@ -104,7 +106,7 @@ class Manager extends EventEmitter {
 
   _done(channel) {
     this.schedule.done(channel);
-    if (!this.schedule.getUnfinished_task_num()) {
+    if (!this.schedule.getUnfinishedTaskNum()) {
       this.emit('drain');
     }
   }
