@@ -24,8 +24,7 @@ class Manager extends EventEmitter {
     if (!(taskOptions instanceof Task)) {
       enrichOptions(taskOptions, self.commonOptions, true);
       enrichOptions(taskOptions, self.taskOptions, true);
-      let options = divideOptions(taskOptions, self.taskOptions);
-      task = new Task(options, taskOptions, callback);
+      task = new Task(taskOptions, callback);
     }
     if (!self.listeners('queue').length) {
       self._regist(task);
@@ -40,7 +39,7 @@ class Manager extends EventEmitter {
 
   addChannel(options) {
     options = options || {};
-    enrichOptions(options, this.channelOptions,true);
+    enrichOptions(options, this.channelOptions, true);
     this.schedule.addChannel(options);
   }
 
@@ -100,7 +99,7 @@ class Manager extends EventEmitter {
   }
 
   _regist(task) {
-    task.manager = this;
+    task.manager(this);
     this.schedule.enqueue(task);
   }
 
