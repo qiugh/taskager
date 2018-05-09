@@ -1,4 +1,4 @@
-Taskager means task and manager.It is a scheduler for controlling task in frequency and amount.
+Taskager means task and manager.It is a scheduler for controlling execution of task in frequency and amount.
 
 # start 
 npm install taskager
