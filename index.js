@@ -24,7 +24,8 @@ class Manager extends EventEmitter {
     if (!(taskOptions instanceof Task)) {
       enrichOptions(taskOptions, self.commonOptions, true);
       enrichOptions(taskOptions, self.taskOptions, true);
-      task = new Task(taskOptions, callback);
+      let options = divideOptions(taskOptions, self.taskOptions);
+      task = new Task(options, taskOptions, callback);
     }
     if (!self.listeners('queue').length) {
       self._regist(task);
