@@ -22,8 +22,8 @@ class Manager extends EventEmitter {
     taskOptions = taskOptions || {};
     let task = taskOptions;
     if (!(taskOptions instanceof Task)) {
-      enrichOptions(taskOptions, self.commonOptions);
-      enrichOptions(taskOptions, self.taskOptions);
+      enrichOptions(taskOptions, self.commonOptions, true);
+      enrichOptions(taskOptions, self.taskOptions, true);
       let options = divideOptions(taskOptions, self.taskOptions);
       task = new Task(options, taskOptions, callback);
     }
@@ -40,7 +40,7 @@ class Manager extends EventEmitter {
 
   addChannel(options) {
     options = options || {};
-    enrichOptions(options, this.channelOptions);
+    enrichOptions(options, this.channelOptions,true);
     this.schedule.addChannel(options);
   }
 
