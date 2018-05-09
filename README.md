@@ -1,11 +1,8 @@
 # taskager
 Taskager means task and manager.It is a scheduler for controlling task in frequency and amount.
 
+# start 
 npm install taskager
-
-Function:
-1.queue(taskOptions, callback)
-queue a task or taskOptions into the priority queue.
 
 # Task模型
 
@@ -16,7 +13,7 @@ queue a task or taskOptions into the priority queue.
 # Manager模型
 
 * 最上层是管理器Manager，管理器拥有一个调度器Schedule，调度器拥有多个执行通道Channel，每个通道拥有一个优先级队列Queue  
-* 任务Task添加到管理器Manager的意义是：根据Task的配置参数里的通道参数和优先级参数将Task添加到Manager的指定Channel的指定队列里。  
+* 管理器Manager queue一个task的意义是：根据Task配置里的通道参数和优先级参数将Task添加到Manager的指定Channel的指定优先级队列里排队。  
 * 每个执行通道有两个控制参数决定何时执行一个任务：  
   1. executeRate：代表每个通道执行任务的频率  
   2. concurrency：代表每个通道同时执行的任务数量  
@@ -25,14 +22,14 @@ queue a task or taskOptions into the priority queue.
 
 # 系统支持通用配置和个性化配置
 ## 系统的默认配置包括以下部分：
-   1. manager默认配置  
-      A: schedule配置  
-      B: channel配置  
-      C: queue配置  
-      D: common配置（manager其他辅助功能的通用配置容器）  
-    2. task默认配置  
-      E: task本体配置（取决于该task最原本的行为）  
-      F: task处理器配置（取决于该task的前置处理和后置处理行为）  
+* manager默认配置  
+      1. A: schedule配置  
+      2. B: channel配置  
+      3. C: queue配置  
+      4. D: common配置（manager其他辅助功能的通用配置容器）  
+* task默认配置  
+      1. E: task本体配置（取决于该task最原本的行为）  
+      2. F: task处理器配置（取决于该task的前置处理和后置处理行为）  
 ## 配置参数的变化过程：
 1. 实例化manager时，可传递6种配置中的任意参数组合，外加一个configFilePath参数  
    * 通过configFilePath参数，读取本地文件默认的上述6项配置  
