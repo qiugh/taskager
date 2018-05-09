@@ -1,4 +1,3 @@
-# taskager
 Taskager means task and manager.It is a scheduler for controlling task in frequency and amount.
 
 # start 
