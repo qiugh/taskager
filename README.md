@@ -22,13 +22,13 @@ npm install taskager
 # 系统支持通用配置和个性化配置
 ## 系统的默认配置包括以下部分：
 * manager默认配置  
-      1. A: schedule配置  
-      2. B: channel配置  
-      3. C: queue配置  
-      4. D: common配置（manager其他辅助功能的通用配置容器）  
+  1. A: schedule配置  
+  2. B: channel配置  
+  3. C: queue配置  
+  4. D: common配置（manager其他辅助功能的通用配置容器）  
 * task默认配置  
-      1. E: task本体配置（取决于该task最原本的行为）  
-      2. F: task处理器配置（取决于该task的前置处理和后置处理行为）  
+  1. E: task本体配置（取决于该task最原本的行为）  
+  2. F: task处理器配置（取决于该task的前置处理和后置处理行为）  
 ## 配置参数的变化过程：
 1. 实例化manager时，可传递6种配置中的任意参数组合，外加一个configFilePath参数  
    * 通过configFilePath参数，读取本地文件默认的上述6项配置  
