@@ -12,7 +12,7 @@ npm install taskager
 # Manager模型
 
 * 最上层是管理器Manager，管理器拥有一个调度器Schedule，调度器拥有多个执行通道Channel，每个通道拥有一个优先级队列Queue  
-* 管理器Manager queue一个task的意义是：根据Task配置里的通道参数和优先级参数将Task添加到Manager的指定Channel的指定优先级队列里排队。  
+* 管理器queue一个task的意义是：根据Task配置里的通道参数和优先级参数将Task添加到Manager的指定Channel的指定优先级队列里排队。  
 * 每个执行通道有两个控制参数决定何时执行一个任务：  
   1. executeRate：代表每个通道执行任务的频率  
   2. concurrency：代表每个通道同时执行的任务数量  
