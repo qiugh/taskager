@@ -160,17 +160,17 @@ function divideOptions(taskOptions, defaultOptions) {
 }
 
 function _readConfigFiles(configFilesPath) {
-  let taskConfig = configFilesPath + 'task.js';
-  let managerConfig = configFilesPath + 'manager.js';
+  let taskConfig = Path.resolve(configFilesPath + '', './task.js');
+  let managerConfig = Path.resolve(configFilesPath + '', './manager.js');
   if (fs.existsSync(taskConfig)) {
     taskConfig = require(taskConfig);
   } else {
-    taskConfig = require(Path.resolve(__dirname, './config/') + '/task.js')
+    taskConfig = require(Path.resolve(__dirname, './config/task.js'))
   }
   if (fs.existsSync(managerConfig)) {
     managerConfig = require(managerConfig);
   } else {
-    managerConfig = require(Path.resolve(__dirname, './config/') + '/manager.js');
+    managerConfig = require(Path.resolve(__dirname, './config/manager.js'));
   }
   return [taskConfig, managerConfig];
 }
