@@ -107,7 +107,7 @@ class Manager extends EventEmitter {
   _done(channel) {
     this.schedule.done(channel);
     if (!this.schedule.getUnfinishedTaskNum()) {
-      this.emit('drain');
+      this.emit('done');
     }
   }
 }
