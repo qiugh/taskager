@@ -7,27 +7,27 @@ module.exports = {
   "processors": [
     {
       "name": "p1",
+      "asyn": false,
       "func": function (task) {
         let processor = 'p1'
-        console.log('flow <' + processor + '> is executing along with the value: <' + task.processor(processor) + '>.');
-      },
-      asyn: false
+        console.log('flow <' + processor + '> is executing along with the value: <' + task.attr(processor) + '>.');
+      }
     },
     {
       "name": "p2",
+      "asyn": false,
       "func": function (task) {
         let processor = 'p2'
-        console.log('flow <' + processor + '> is executing along with the value: <' + task.processor(processor) + '>.');
-      },
-      asyn: false
+        console.log('flow <' + processor + '> is executing along with the value: <' + task.attr(processor) + '>.');
+      }
     },
     {
       "name": "p3",
+      "asyn": true,
       "func": function (task) {
         let processor = 'p3'
-        console.log('flow <' + processor + '> is executing along with the value: <' + task.processor(processor) + '>.');
-      },
-      asyn: true
+        console.log('flow <' + processor + '> is executing along with the value: <' + task.attr(processor) + '>.');
+      }
     }
   ]
 }
