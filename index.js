@@ -100,7 +100,7 @@ class Manager extends EventEmitter {
   }
 
   _regist(task) {
-    task.manager(this);
+    task.attr('manager', this);
     this.schedule.enqueue(task);
   }
 

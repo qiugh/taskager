@@ -9,7 +9,7 @@ module.exports = {
       "name": "p1",
       "func": function (task) {
         let processor = 'p1'
-        console.log('before_execute_process_flow <' + processor + '> is executing along with the value: <' + task.processor(processor) + '>.');
+        console.log('flow <' + processor + '> is executing along with the value: <' + task.processor(processor) + '>.');
       },
       asyn: false
     },
@@ -17,18 +17,15 @@ module.exports = {
       "name": "p2",
       "func": function (task) {
         let processor = 'p2'
-
-        console.log('before_execute_process_flow <' + processor + '> is executing along with the value: <' + task.processor(processor) + '>.');
+        console.log('flow <' + processor + '> is executing along with the value: <' + task.processor(processor) + '>.');
       },
       asyn: false
     },
     {
       "name": "p3",
-      "func": function (task, callback) {
+      "func": function (task) {
         let processor = 'p3'
-
-        console.log('before_execute_process_flow <' + processor + '> is executing along with the value: <' + task.processor(processor) + '>.');
-        setTimeout(callback, 2000, 'error', task)
+        console.log('flow <' + processor + '> is executing along with the value: <' + task.processor(processor) + '>.');
       },
       asyn: true
     }
