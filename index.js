@@ -35,6 +35,8 @@ class Manager extends EventEmitter {
       self.emit('queue', task, resolve, reject);
     }).then(function () {
       self._regist(task);
+    }).catch(e => {
+      self.emit('error', e);
     });
   }
 
@@ -78,7 +80,7 @@ class Manager extends EventEmitter {
 
   _initTaskAndManager(options) {
     let self = this;
-    let [taskConfig, managerConfig] = _readConfigFiles(options.configFilesPath);
+    let [taskConfig, managerConfig] = _getDefaultConfig(options.configFilesPath);
 
     self.commonOptions = managerConfig.commonOptions;
     self.queueOptions = managerConfig.queueOptions;
@@ -88,7 +90,9 @@ class Manager extends EventEmitter {
 
     if (taskConfig.processors instanceof Array) {
       taskConfig.processors.forEach(processor => {
-        self.commonOptions[processor.name] = NOT_SET;
+        if (!self.commonOptions.hasOwnProperty(processor.name)) {
+          self.commonOptions[processor.name] = NOT_SET;
+        }
         self.processFlow.add(new Processor(processor));
       });
     }
@@ -159,20 +163,20 @@ function divideOptions(taskOptions, defaultOptions) {
   return options;
 }
 
-function _readConfigFiles(configFilesPath) {
+function _getDefaultConfig(configFilesPath) {
   let taskConfig = Path.resolve(configFilesPath + '', './task.js');
   let managerConfig = Path.resolve(configFilesPath + '', './manager.js');
   if (fs.existsSync(taskConfig)) {
     taskConfig = require(taskConfig);
   } else {
-    taskConfig = require(Path.resolve(__dirname, './config/task.js'))
+    taskConfig = require(Path.resolve(__dirname, './config/task.js'));
   }
   if (fs.existsSync(managerConfig)) {
     managerConfig = require(managerConfig);
   } else {
     managerConfig = require(Path.resolve(__dirname, './config/manager.js'));
   }
-  return [taskConfig, managerConfig];
+  return [taskConfig(), managerConfig()];
 }
 
 module.exports = Manager;
