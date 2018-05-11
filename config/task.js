@@ -28,7 +28,7 @@ module.exports = function generateDefaultTaskConfig() {
         "func": function (task,callback) {
           let processor = 'p3'
           console.log('flow <' + processor + '> is executing along with the value: <' + task.attr(processor) + '>.');
-          setTimeout(callback,2000,null,'p3p3p3p3p3p3')
+          setTimeout(callback,2000,null,task)
         }
       }
     ]

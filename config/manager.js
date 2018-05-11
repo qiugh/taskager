@@ -1,9 +1,10 @@
 module.exports = function generateDefaultManagerConfig() {
   return {
     "scheduleOptions": {
-      "loadbalance": 0
+      "loadbalance": true
     },
     "channelOptions": {
+      "autostart": false,
       "concurrency": 5,
       "ratelimit": 0,
     },
@@ -13,7 +14,7 @@ module.exports = function generateDefaultManagerConfig() {
     "commonOptions": {
       "retries": 3,
       "delaytime": 2000,
-      optionn:'wsx'
+      "optionn": 'testoptionn'
     }
   };
 };

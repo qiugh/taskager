@@ -11,7 +11,7 @@ const NOT_SET = 'Not Set';
 class Manager extends EventEmitter {
   constructor(options) {
     super();
-    options = options || {};
+    if (!options || typeof options !== 'object') options = {};
     this.processFlow = new Flow();
     this._initTaskAndManager(options);
     this.schedule = new Schedule(this.scheduleOptions);
@@ -19,12 +19,12 @@ class Manager extends EventEmitter {
 
   queue(taskOptions, callback) {
     let self = this;
-    taskOptions = taskOptions || {};
+    if (!taskOptions || typeof taskOptions !== 'object') taskOptions = {};
     let task = taskOptions;
     if (!(taskOptions instanceof Task)) {
-      enrichOptions(taskOptions, self.commonOptions, true);
-      enrichOptions(taskOptions, self.taskOptions, true);
-      let options = divideOptions(taskOptions, self.taskOptions);
+      _enrichOptions(taskOptions, self.commonOptions, true);
+      _enrichOptions(taskOptions, self.taskOptions, true);
+      let options = _divideOptions(taskOptions, self.taskOptions);
       task = new Task(options, taskOptions, callback);
     }
     if (!self.listeners('queue').length) {
@@ -40,9 +40,18 @@ class Manager extends EventEmitter {
     });
   }
 
+  start() {
+    this.schedule.start();
+  }
+
+  getChannel(channelId){
+    return this.schedule.getChannel(channelId);
+  }
+
   addChannel(options) {
+    if (!options || typeof options !== 'object') options = {};
     options = options || {};
-    enrichOptions(options, this.channelOptions, true);
+    _enrichOptions(options, this.channelOptions, true);
     this.schedule.addChannel(options);
   }
 
@@ -108,7 +117,7 @@ class Manager extends EventEmitter {
     this.schedule.enqueue(task);
   }
 
-  _done(channel) {
+  done(channel) {
     this.schedule.done(channel);
     if (!this.schedule.getUnfinishedTaskNum()) {
       this.emit('done');
@@ -134,7 +143,7 @@ function _overrideOptions(master, slave, first) {
   return master;
 }
 
-function enrichOptions(newOptions, defaultOptions, first) {
+function _enrichOptions(newOptions, defaultOptions, first) {
   if (typeof newOptions !== 'object' || newOptions === null
     || typeof defaultOptions !== 'object' || defaultOptions === null) {
     return newOptions;
@@ -146,13 +155,13 @@ function enrichOptions(newOptions, defaultOptions, first) {
       continue;
     }
     if (typeof newOptions[dkey] === 'object' && typeof defaultOptions[dkey] === 'object') {
-      newOptions[dkey] = enrichOptions(newOptions[dkey], defaultOptions[dkey]);
+      newOptions[dkey] = _enrichOptions(newOptions[dkey], defaultOptions[dkey]);
     }
   }
   return newOptions;
 }
 
-function divideOptions(taskOptions, defaultOptions) {
+function _divideOptions(taskOptions, defaultOptions) {
   let options = {};
   for (let key in defaultOptions) {
     if (taskOptions.hasOwnProperty(key)) {
