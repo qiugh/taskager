@@ -31,10 +31,11 @@ class Manager extends EventEmitter {
       self._regist(task);
       return;
     }
-    new Promise((resolve, reject) => {
-      self.emit('queue', task, resolve, reject);
-    }).then(function () {
-      self._regist(task);
+    new Promise((resolve) => {
+      self.emit('queue', task, () => {
+        self._regist(task);
+        resolve();
+      });
     }).catch(e => {
       self.emit('error', e);
     });
@@ -44,7 +45,7 @@ class Manager extends EventEmitter {
     this.schedule.start();
   }
 
-  getChannel(channelId){
+  getChannel(channelId) {
     return this.schedule.getChannel(channelId);
   }
 

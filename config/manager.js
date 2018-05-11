@@ -1,12 +1,12 @@
-module.exports = function generateDefaultManagerConfig() {
+module.exports = function () {
   return {
     "scheduleOptions": {
       "loadbalance": true
     },
     "channelOptions": {
-      "autostart": false,
-      "concurrency": 5,
       "ratelimit": 0,
+      "concurrency": 5,
+      "autostart": true
     },
     "queueOptions": {
       "priorityrange": 6
@@ -14,7 +14,8 @@ module.exports = function generateDefaultManagerConfig() {
     "commonOptions": {
       "retries": 3,
       "delaytime": 2000,
-      "optionn": 'testoptionn'
+      "optionn": 'testv',
+      "p2": 'processor2v'
     }
   };
 };

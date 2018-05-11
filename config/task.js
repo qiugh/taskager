@@ -1,4 +1,4 @@
-module.exports = function generateDefaultTaskConfig() {
+module.exports = function () {
   return {
     "options": {
       "option1": "not_set",
@@ -25,10 +25,10 @@ module.exports = function generateDefaultTaskConfig() {
       {
         "name": "p3",
         "asyn": true,
-        "func": function (task,callback) {
+        "func": function (task, callback) {
           let processor = 'p3'
           console.log('flow <' + processor + '> is executing along with the value: <' + task.attr(processor) + '>.');
-          setTimeout(callback,2000,null,task)
+          setTimeout(callback, 2000, null, task)
         }
       }
     ]
