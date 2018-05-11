@@ -5,12 +5,13 @@ let noOptionsManager = new Manager();
 
 let optionsManager = new Manager({
   loadbalance: true,
-  ratelimit: 2345,
+  autostart:false,
+  ratelimit: 2,
   priorityrange: 2,
   retries: 0,
   option1: 'op1v',
   option2: 'op2v',
-  p2: 'prop2v',
+  //p2: 'prop2v',
   headers:{
     mm:'ss'
   },
@@ -34,16 +35,21 @@ let task2 = {
   p2: 'task2p22222'
 }
 
-optionsManager.on('queue', (task, resoleve, reject) => {
-  console.log(optionsManager.schedule._channels)
-  resoleve()
+optionsManager.on('queue', (task, next) => {
+
+  throw new Error('test')
+  next();
+})
+
+optionsManager.on('error',e=>{
+  console.log(e)
 })
 
 optionsManager.on('done', () => {
   console.log('iam done')
 })
 
-//noOptionsManager.queue(task1)
+
 optionsManager.queue(task2,function(err,res) {
 
   let tt = res[res.length-1].result;
@@ -51,7 +57,7 @@ optionsManager.queue(task2,function(err,res) {
   tt.done()
 })
 
-for(let i=0;i<10;i++){
+for(let i=0;i<5;i++){
   optionsManager.queue({ channel: 1 }, function (err, res) {
 
     let tt = res[res.length - 1].result;
@@ -60,3 +66,7 @@ for(let i=0;i<10;i++){
   })
 }
 
+//optionsManager.start();
+
+// optionsManager.getChannel('1').start()
+// optionsManager.getChannel('undefined').start()
