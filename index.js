@@ -12,7 +12,7 @@ class Manager extends EventEmitter {
   constructor(options) {
     super();
     if (!options || typeof options !== 'object') options = {};
-    this.processFlow = new Flow();
+    this.processFlow = new Flow({ returnXargs: true });
     this._initTaskAndManager(options);
     this.schedule = new Schedule(this.scheduleOptions);
   }
