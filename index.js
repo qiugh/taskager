@@ -19,7 +19,9 @@ class Manager extends EventEmitter {
 
   queue(taskOptions, callback) {
     let self = this;
-    if (!taskOptions || typeof taskOptions !== 'object') taskOptions = {};
+    if (!taskOptions || typeof taskOptions !== 'object') {
+      taskOptions = {};
+    }
     let task = taskOptions;
     if (!(taskOptions instanceof Task)) {
       _enrichOptions(taskOptions, self.commonOptions, true);
@@ -115,6 +117,9 @@ class Manager extends EventEmitter {
 
   _regist(task) {
     task.attr('manager', this);
+    if(task.attr('channel')==='direct'){
+      task.execute();
+    }
     this.schedule.enqueue(task);
   }
 

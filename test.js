@@ -37,7 +37,7 @@ let task2 = {
 
 optionsManager.on('queue', (task, next) => {
 
-  throw new Error('test')
+  //throw new Error('test')
   next();
 })
 
@@ -60,13 +60,14 @@ optionsManager.queue(task2,function(err,res) {
 for(let i=0;i<5;i++){
   optionsManager.queue({ channel: 1 }, function (err, res) {
 
+    
     let tt = res[res.length - 1].result;
     console.log(1, tt.attr('channel'))
     tt.done()
   })
 }
 
-//optionsManager.start();
+optionsManager.start();
 
 // optionsManager.getChannel('1').start()
 // optionsManager.getChannel('undefined').start()
