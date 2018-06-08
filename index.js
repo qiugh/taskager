@@ -1,17 +1,20 @@
 let fs = require('fs');
 let Path = require('path');
-let np = require('node-processor');
+let Tool = require('ikits/tool');
+let Np = require('node-processor');
 let EventEmitter = require("events").EventEmitter;
 let Task = require(Path.resolve(__dirname, './lib/Task.js'));
 let Schedule = require(Path.resolve(__dirname, './lib/Schedule.js'));
 
-let Flow = np.Flow, Processor = np.Processor;
 const NOT_SET = 'Not Set';
+let Flow = Np.Flow, Processor = Np.Processor;
 
 class Manager extends EventEmitter {
   constructor(options) {
     super();
-    if (!options || typeof options !== 'object') options = {};
+    if (Tool.isBasic(options)) {
+      options = {};
+    }
     this.processFlow = new Flow({ returnXargs: true });
     this._initTaskAndManager(options);
     this.schedule = new Schedule(this.scheduleOptions);
@@ -19,7 +22,7 @@ class Manager extends EventEmitter {
 
   queue(taskOptions, callback) {
     let self = this;
-    if (!taskOptions || typeof taskOptions !== 'object') {
+    if (Tool.isBasic(taskOptions)) {
       taskOptions = {};
     }
     let task = taskOptions;
@@ -52,8 +55,9 @@ class Manager extends EventEmitter {
   }
 
   addChannel(options) {
-    if (!options || typeof options !== 'object') options = {};
-    options = options || {};
+    if (Tool.isBasic(options)) {
+      options = {};
+    }
     _enrichOptions(options, this.channelOptions, true);
     this.schedule.addChannel(options);
   }
@@ -117,7 +121,7 @@ class Manager extends EventEmitter {
 
   _regist(task) {
     task.attr('manager', this);
-    if(task.attr('channel')==='direct'){
+    if (task.attr('channel') === 'direct') {
       task.execute();
     }
     this.schedule.enqueue(task);
@@ -129,53 +133,6 @@ class Manager extends EventEmitter {
       this.emit('done');
     }
   }
-}
-
-function _overrideOptions(master, slave, first) {
-  if (typeof slave !== 'object' || typeof master !== 'object' || master === null) {
-    return slave;
-  }
-  if (first) {
-    for (let mkey in master) {
-      if (slave.hasOwnProperty(mkey)) {
-        master[mkey] = _overrideOptions(master[mkey], slave[mkey]);
-      }
-    }
-  } else {
-    for (let skey in slave) {
-      master[skey] = _overrideOptions(master[skey], slave[skey]);
-    }
-  }
-  return master;
-}
-
-function _enrichOptions(newOptions, defaultOptions, first) {
-  if (typeof newOptions !== 'object' || newOptions === null
-    || typeof defaultOptions !== 'object' || defaultOptions === null) {
-    return newOptions;
-  }
-  for (let dkey in defaultOptions) {
-    if (first && defaultOptions[dkey] === NOT_SET) continue;
-    if (!newOptions.hasOwnProperty(dkey)) {
-      newOptions[dkey] = typeof defaultOptions[dkey] === 'object' ? JSON.parse(JSON.stringify(defaultOptions[dkey])) : defaultOptions[dkey];
-      continue;
-    }
-    if (typeof newOptions[dkey] === 'object' && typeof defaultOptions[dkey] === 'object') {
-      newOptions[dkey] = _enrichOptions(newOptions[dkey], defaultOptions[dkey]);
-    }
-  }
-  return newOptions;
-}
-
-function _divideOptions(taskOptions, defaultOptions) {
-  let options = {};
-  for (let key in defaultOptions) {
-    if (taskOptions.hasOwnProperty(key)) {
-      options[key] = taskOptions[key];
-      delete taskOptions[key];
-    }
-  }
-  return options;
 }
 
 function _getDefaultConfig(configFilesPath) {
