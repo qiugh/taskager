@@ -1,14 +1,14 @@
 let fs = require('fs');
 let Path = require('path');
 let Tool = require('ikits');
+let iflow = require('ikits/flow');
 let Task = require('./lib/Task.js');
 let Schedule = require('./lib/Schedule.js');
-let nodeProcessor = require('node-processor');
 let EventEmitter = require("events").EventEmitter;
 
 let NOT_SET = 'Not Set';
-let Flow = nodeProcessor.Flow;
-let Processor = nodeProcessor.Processor;
+let Flow = iflow.Flow;
+let Processor = iflow.Processor;
 
 class Manager extends EventEmitter {
     constructor(options) {
@@ -18,12 +18,12 @@ class Manager extends EventEmitter {
 
         let taskConfig = _getDefaultTaskConfig(options.configFilesPath);
         let managerConfig = _getDefaultManagerConfig(options.configFilesPath);
+
         Tool.enable(self, 'taskOptions', 2, taskConfig.options);
         Tool.enable(self, 'queueOptions', 2, managerConfig.queueOptions);
         Tool.enable(self, 'commonOptions', 2, managerConfig.commonOptions);
         Tool.enable(self, 'channelOptions', 2, managerConfig.channelOptions);
         Tool.enable(self, 'scheduleOptions', 2, managerConfig.scheduleOptions);
-
         Tool.enable(self, 'processFlow', 1, new Flow({ returnXargs: true }));
 
         if (taskConfig.processors instanceof Array) {
@@ -41,7 +41,7 @@ class Manager extends EventEmitter {
         Tool.overrideJson(self.channelOptions(), options);
         Tool.overrideJson(self.scheduleOptions(), options);
 
-        this.schedule = new Schedule(self.scheduleOptions());
+        Tool.enable(self, 'schedule', 1, new Schedule(self.scheduleOptions()));
     }
 
     queue(taskOptions, callback) {
@@ -71,13 +71,13 @@ class Manager extends EventEmitter {
     }
 
     start() {
-        this.schedule.start();
+        this.schedule().start();
     }
 
     addChannel(options) {
         options = Tool.isObject(options) ? options : {};
         Tool.fillJson(options, this.channelOptions);
-        this.schedule.addChannel(options);
+        this.schedule().addChannel(options);
     }
 
     addProcessor(options, anchor, around) {
@@ -103,12 +103,12 @@ class Manager extends EventEmitter {
         if (task.attr('channel') === 'direct') {
             task.execute();
         }
-        this.schedule.enqueue(task);
+        this.schedule().enqueue(task);
     }
 
     done(channel) {
-        this.schedule.done(channel);
-        if (!this.schedule.getUnfinishedTaskNum()) {
+        this.schedule().done(channel);
+        if (!this.schedule().getUnfinishedTaskNum()) {
             this.emit('done');
         }
     }
