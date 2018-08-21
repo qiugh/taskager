@@ -59,13 +59,8 @@ class Manager extends EventEmitter {
             self._regist(task);
             return task;
         }
-        new Promise((resolve) => {
-            self.emit('queue', task, () => {
-                self._regist(task);
-                resolve();
-            });
-        }).catch(e => {
-            self.emit('error', e);
+        self.emit('queue', task, function () {
+            self._regist(task);
         });
         return task;
     }
@@ -89,7 +84,10 @@ class Manager extends EventEmitter {
                 break;
             }
         }
-        if (idx === undefined) return;
+        if (idx === undefined) {
+            this.processFlow().add(new Processor(options));
+            return;
+        }
         if (around === 'before') {
             around = 0;
         } else {
