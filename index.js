@@ -104,6 +104,10 @@ class Manager extends EventEmitter {
         this.schedule().enqueue(task);
     }
 
+    queueSize() {
+        this.schedule().waitQueueSize();
+    }
+
     done(channel) {
         this.schedule().done(channel);
         if (!this.schedule().getUnfinishedTaskNum()) {
