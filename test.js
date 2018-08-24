@@ -6,7 +6,7 @@ let noOptionsManager = new Manager();
 let optionsManager = new Manager({
   loadbalance: true,
   autostart:false,
-  ratelimit: 2,
+  interval: 2,
   priorityrange: 2,
   retries: 0,
   option1: 'op1v',

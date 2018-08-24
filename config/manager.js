@@ -4,7 +4,7 @@ module.exports = function () {
             'loadbalance': true
         },
         'channelOptions': {
-            'ratelimit': 0,
+            'interval': 0,
             'concurrency': 5,
             'autostart': true
         },
