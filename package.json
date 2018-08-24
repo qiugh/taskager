@@ -20,7 +20,6 @@
     "homepage": "https://github.com/qiugh/taskager#readme",
     "description": "",
     "dependencies": {
-        "ikits": "0.0.2",
         "node-processor": "0.0.4"
     }
 }

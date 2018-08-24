@@ -1,9 +1,9 @@
 let fs = require('fs');
 let Path = require('path');
-let Tool = require('ikits');
-let Task = require('./lib/Task.js');
+let Tool = require('./lib/util');
+let Task = require('./lib/Task');
 let iflow = require('node-processor');
-let Schedule = require('./lib/Schedule.js');
+let Schedule = require('./lib/Schedule');
 let EventEmitter = require("events").EventEmitter;
 
 let NOT_SET = 'Not Set';
