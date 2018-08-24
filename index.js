@@ -1,8 +1,8 @@
 let fs = require('fs');
 let Path = require('path');
 let Tool = require('ikits');
-let iflow = require('ikits/flow');
 let Task = require('./lib/Task.js');
+let iflow = require('node-processor');
 let Schedule = require('./lib/Schedule.js');
 let EventEmitter = require("events").EventEmitter;
 
