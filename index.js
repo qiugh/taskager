@@ -2,15 +2,15 @@ let fs = require('fs');
 let Path = require('path');
 let Tool = require('./lib/util');
 let Task = require('./lib/Task');
-let iflow = require('node-processor');
 let Schedule = require('./lib/Schedule');
-let EventEmitter = require("events").EventEmitter;
+let NodeProcessor = require('node-processor');
+let EEmitter = require("events").EventEmitter;
 
 let NOT_SET = 'Not Set';
-let Flow = iflow.Flow;
-let Processor = iflow.Processor;
+let Flow = NodeProcessor.Flow;
+let Processor = NodeProcessor.Processor;
 
-class Manager extends EventEmitter {
+class Manager extends EEmitter {
     constructor(options) {
         super();
         let self = this;
@@ -42,8 +42,8 @@ class Manager extends EventEmitter {
         Tool.overrideJson(self.scheduleOptions(), options);
 
         Tool.enable(self, 'schedule', 1, new Schedule(self.scheduleOptions()));
-        self.schedule().manager = function() {
-            return self
+        self.schedule().manager = function () {
+            return self;
         }
     }
 
