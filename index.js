@@ -42,6 +42,9 @@ class Manager extends EventEmitter {
         Tool.overrideJson(self.scheduleOptions(), options);
 
         Tool.enable(self, 'schedule', 1, new Schedule(self.scheduleOptions()));
+        self.schedule().manager = function() {
+            return self
+        }
     }
 
     queue(taskOptions, callback) {
