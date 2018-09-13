@@ -1,8 +1,7 @@
-let fs = require('fs');
 let Path = require('path');
-let Tool = require('./lib/util');
+let Util = require('./lib/util');
 let Task = require('./lib/Task');
-let Schedule = require('./lib/Schedule');
+let Channel = require('./lib/Channel.js');
 let NodeProcessor = require('node-processor');
 let EEmitter = require("events").EventEmitter;
 
@@ -14,48 +13,45 @@ class Manager extends EEmitter {
     constructor(options) {
         super();
         let self = this;
-        options = Tool.isObject(options) ? options : {};
+        options = isOption(options);
 
-        let taskConfig = _getDefaultTaskConfig(options.configFilesPath);
-        let managerConfig = _getDefaultManagerConfig(options.configFilesPath);
+        self._channels = {};
+        self._unfinishedTaskNum = 0;
+        self._loadbalance = options.loadbalance;
+        self.processFlow = new Flow({
+            returnXargs: options.returnxargs
+        });
 
-        Tool.enable(self, 'taskOptions', 2, taskConfig.options);
-        Tool.enable(self, 'queueOptions', 2, managerConfig.queueOptions);
-        Tool.enable(self, 'commonOptions', 2, managerConfig.commonOptions);
-        Tool.enable(self, 'channelOptions', 2, managerConfig.channelOptions);
-        Tool.enable(self, 'scheduleOptions', 2, managerConfig.scheduleOptions);
-        Tool.enable(self, 'processFlow', 1, new Flow({ returnXargs: true }));
+        let [taskConfig, managerConfig] = [
+            'task',
+            'manager'
+        ].map(name => {
+            return _getConfig(options.config, name);
+        });
 
-        if (taskConfig.processors instanceof Array) {
-            taskConfig.processors.forEach(processor => {
-                if (!self.commonOptions().hasOwnProperty(processor.name)) {
-                    self.commonOptions(processor.name, NOT_SET);
-                }
-                self.processFlow().add(new Processor(processor));
-            });
-        }
+        self.managerOptions = managerConfig;
+        self.taskOptions = taskConfig.options;
 
-        Tool.overrideJson(self.taskOptions(), options);
-        Tool.overrideJson(self.queueOptions(), options);
-        Tool.overrideJson(self.commonOptions(), options);
-        Tool.overrideJson(self.channelOptions(), options);
-        Tool.overrideJson(self.scheduleOptions(), options);
+        taskConfig.processors.forEach(processor => {
+            if (!self.managerOptions.hasOwnProperty(processor.name)) {
+                self.managerOptions[processor.name] = NOT_SET;
+            }
+            self.processFlow.add(new Processor(processor));
+        });
 
-        Tool.enable(self, 'schedule', 1, new Schedule(self.scheduleOptions()));
-        self.schedule().manager = function () {
-            return self;
-        }
+        Util.overrideJson(self.taskOptions, options);
+        Util.overrideJson(self.managerOptions, options);
     }
 
     queue(taskOptions, callback) {
-        let self = this;
-        taskOptions = Tool.isObject(taskOptions) ? taskOptions : {};
-        let task = taskOptions;
 
+        taskOptions = isOption(taskOptions);
+        let self = this;
+        let task = taskOptions;
         if (!(taskOptions instanceof Task)) {
-            Tool.fillJson(taskOptions, self.taskOptions());
-            Tool.fillJson(taskOptions, self.commonOptions());
-            let options = Tool.divideJson(taskOptions, self.taskOptions());
+            Util.fillJson(taskOptions, self.taskOptions);
+            Util.fillJson(taskOptions, self.managerOptions);
+            let options = Util.divideJson(taskOptions, self.taskOptions);
             task = new Task(options, taskOptions, callback);
         }
         if (!self.listeners('queue').length) {
@@ -69,13 +65,26 @@ class Manager extends EEmitter {
     }
 
     start() {
-        this.schedule().start();
+        for (let channelId in this._channels) {
+            this.getChannel(channelId).start();
+        }
     }
 
     addChannel(options) {
-        options = Tool.isObject(options) ? options : {};
-        Tool.fillJson(options, this.channelOptions);
-        this.schedule().addChannel(options);
+        options = isOption(options);
+        Util.fillJson(options, this.taskOptions());
+        _addChannel(options);
+    }
+
+    _addChannel(options, channelId) {
+        channelId = channelId || options.channel;
+        let channel = this.getChannel(channelId);
+        if (!channel) {
+            channel = new Channel(options);
+            channel.initQueue(this.managerOptions);
+            this._channels[channelId] = channel;
+        }
+        return channel;
     }
 
     addProcessor(options, anchor, around) {
@@ -100,43 +109,83 @@ class Manager extends EEmitter {
     }
 
     _regist(task) {
-        Tool.enable(task, 'manager', 1, this);
-        if (task.attr('channel') === 'direct') {
-            task.execute();
+        let self = this;
+        task.manager = function () {
+            return self;
         }
-        this.schedule().enqueue(task);
+        this._unfinishedTaskNum++;
+        let channelId = task.attr('channel');
+        if (channelId === 'direct')
+            return task.execute();
+        let channel = this._addChannel(self.managerOptions, channelId);
+        let priority = Math.floor(Number(task.attr('priority')));
+        channel.enqueue(task, priority);
+    }
+
+
+
+
+    done(channelId) {
+        this._unfinishedTaskNum--;
+        if (!this._unfinishedTaskNum) {
+            this.emit('done');
+            return;
+        }
+        if (channelId == 'direct') {
+            return;
+        }
+        let channel = this.getChannel(channelId);
+        channel.done();
+        let task = null;
+        if (channel.size() || !this._loadbalance)
+            return;
+        if (!(task = this._dequeue()))
+            return;
+        task.attr('channel', channelId);
+        let priority = Math.floor(Number(task.attr('priority')));
+        channel.enqueue(task, priority);
     }
 
     queueSize() {
-        this.schedule().waitQueueSize();
-    }
-
-    done(channel) {
-        this.schedule().done(channel);
-        if (!this.schedule().getUnfinishedTaskNum()) {
-            this.emit('done');
+        let cnt = 0;
+        for (let channelId in this._channels) {
+            cnt += this.getChannel(channelId).size();
         }
+        return cnt;
     }
+    getChannel(channelId) {
+        return this._channels[channelId];
+    }
+
+    _dequeue() {
+        let task;
+        for (let channelId in this._channels) {
+            if (this.getChannel(channelId).size() > 1) {
+                task = this.getChannel(channelId).dequeue();
+                break;
+            }
+        }
+        return task;
+    }
+
 }
 
-function _getDefaultTaskConfig(configFilesPath) {
-    let taskConfig = Path.resolve(configFilesPath + '', './task.js');
-    if (fs.existsSync(taskConfig)) {
-        taskConfig = require(taskConfig);
-    } else {
-        taskConfig = require(Path.resolve(__dirname, './config/task.js'));
+function _getConfig(config, name) {
+    config = Path.resolve(config + '', './' + name + '.js');
+    try {
+        config = require(config);
+    } catch (e) {
+        //console.error(e);
+        config = require(Path.resolve(__dirname, './config/' + name + '.js'));
     }
-    return taskConfig();
+    return config();
 }
 
-function _getDefaultManagerConfig(configFilesPath) {
-    let managerConfig = Path.resolve(configFilesPath + '', './manager.js');
-    if (fs.existsSync(managerConfig)) {
-        managerConfig = require(managerConfig);
-    } else {
-        managerConfig = require(Path.resolve(__dirname, './config/manager.js'));
+function isOption(options) {
+    if (typeof options !== 'object' || options === null) {
+        return {};
     }
-    return managerConfig();
+    return options;
 }
 
 module.exports = Manager;
