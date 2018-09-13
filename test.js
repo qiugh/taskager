@@ -54,7 +54,7 @@ optionsManager.on('done', () => {
 optionsManager.queue(task2, function (err, res) {
 
     let tt = res[res.length - 1].result;
-    console.log(undefined, tt.attr('channel'))
+    console.log(undefined, tt.info['channel'])
     tt.done()
 })
 
@@ -63,7 +63,7 @@ for (let i = 0; i < 5; i++) {
 
 
         let tt = res[res.length - 1].result;
-        console.log(1, tt.attr('channel'))
+        console.log(1, tt.info.channel)
         tt.done()
     })
 }

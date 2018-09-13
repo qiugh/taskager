@@ -1,5 +1,4 @@
 let Path = require('path');
-let Util = require('./lib/util');
 let Task = require('./lib/Task');
 let Channel = require('./lib/Channel.js');
 let NodeProcessor = require('node-processor');
@@ -39,8 +38,8 @@ class Manager extends EEmitter {
             self.processFlow.add(new Processor(processor));
         });
 
-        Util.overrideJson(self.taskOptions, options);
-        Util.overrideJson(self.managerOptions, options);
+        overrideJson(self.taskOptions, options);
+        overrideJson(self.managerOptions, options);
     }
 
     queue(taskOptions, callback) {
@@ -49,9 +48,9 @@ class Manager extends EEmitter {
         let self = this;
         let task = taskOptions;
         if (!(taskOptions instanceof Task)) {
-            Util.fillJson(taskOptions, self.taskOptions);
-            Util.fillJson(taskOptions, self.managerOptions);
-            let options = Util.divideJson(taskOptions, self.taskOptions);
+            fillJson(taskOptions, self.taskOptions);
+            fillJson(taskOptions, self.managerOptions);
+            let options = divideJson(taskOptions, self.taskOptions);
             task = new Task(options, taskOptions, callback);
         }
         if (!self.listeners('queue').length) {
@@ -72,7 +71,7 @@ class Manager extends EEmitter {
 
     addChannel(options) {
         options = isOption(options);
-        Util.fillJson(options, this.taskOptions());
+        fillJson(options, this.taskOptions());
         _addChannel(options);
     }
 
@@ -114,11 +113,11 @@ class Manager extends EEmitter {
             return self;
         }
         this._unfinishedTaskNum++;
-        let channelId = task.attr('channel');
+        let channelId = task.info.channel;
         if (channelId === 'direct')
             return task.execute();
         let channel = this._addChannel(self.managerOptions, channelId);
-        let priority = Math.floor(Number(task.attr('priority')));
+        let priority = Math.floor(Number(task.info.priority));
         channel.enqueue(task, priority);
     }
 
@@ -141,8 +140,8 @@ class Manager extends EEmitter {
             return;
         if (!(task = this._dequeue()))
             return;
-        task.attr('channel', channelId);
-        let priority = Math.floor(Number(task.attr('priority')));
+        task.info.channel = channelId;
+        let priority = Math.floor(Number(task.info.priority));
         channel.enqueue(task, priority);
     }
 
@@ -175,7 +174,6 @@ function _getConfig(config, name) {
     try {
         config = require(config);
     } catch (e) {
-        //console.error(e);
         config = require(Path.resolve(__dirname, './config/' + name + '.js'));
     }
     return config();
@@ -186,6 +184,77 @@ function isOption(options) {
         return {};
     }
     return options;
+}
+
+function fillJson(master, slave) {
+    if (typeof slave !== 'object'
+        || typeof master !== 'object'
+        || master === null
+        || slave === null) {
+        throw new Error('master and slave must be valid object');
+    }
+    return _mergeJsonByMaster(master, slave);
+}
+
+function _mergeJsonByMaster(master, slave) {
+    if (typeof slave !== 'object'
+        || typeof master !== 'object'
+        || master === null
+        || slave === null) {
+        return master;
+    }
+    for (let skey in slave) {
+        if (slave.hasOwnProperty(skey)) {
+            if (master.hasOwnProperty(skey)) {
+                master[skey] = _mergeJsonByMaster(master[skey], slave[skey]);
+                continue;
+            }
+            master[skey] = (typeof slave[skey] === 'object' && slave[skey] !== null) ?
+                JSON.parse(JSON.stringify(slave[skey])) : slave[skey];
+        }
+    }
+    return master;
+}
+
+function divideJson(master, slave) {
+    let options = {};
+    for (let skey in slave) {
+        if (slave.hasOwnProperty(skey) && master.hasOwnProperty(skey)) {
+            options[skey] = master[skey];
+            delete master[skey];
+        }
+    }
+    return options;
+}
+
+function overrideJson(master, slave) {
+    if (typeof slave !== 'object'
+        || typeof master !== 'object'
+        || master === null
+        || slave === null) {
+        throw new Error('master and slave must be valid object');
+    }
+    for (let mkey in master) {
+        if (master.hasOwnProperty(mkey) && slave.hasOwnProperty(mkey)) {
+            master[mkey] = _mergeJsonBySlave(master[mkey], slave[mkey]);
+        }
+    }
+    return master;
+}
+
+function _mergeJsonBySlave(master, slave) {
+    if (typeof slave !== 'object'
+        || typeof master !== 'object'
+        || master === null
+        || slave === null) {
+        return slave;
+    }
+    for (let skey in slave) {
+        if (slave.hasOwnProperty(skey)) {
+            master[skey] = _mergeJsonBySlave(master[skey], slave[skey]);
+        }
+    }
+    return master;
 }
 
 module.exports = Manager;
