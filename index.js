@@ -4,7 +4,7 @@ let Channel = require('./lib/Channel.js');
 let NodeProcessor = require('node-processor');
 let EEmitter = require("events").EventEmitter;
 
-let NOT_SET = 'Not Set';
+let NOT_SET = 'Not_Set';
 let Flow = NodeProcessor.Flow;
 let Processor = NodeProcessor.Processor;
 
@@ -37,13 +37,11 @@ class Manager extends EEmitter {
             }
             self.processFlow.add(new Processor(processor));
         });
-
         overrideJson(self.taskOptions, options);
         overrideJson(self.managerOptions, options);
     }
 
     queue(taskOptions, callback) {
-
         taskOptions = isOption(taskOptions);
         let self = this;
         let task = taskOptions;
@@ -65,19 +63,19 @@ class Manager extends EEmitter {
 
     start() {
         for (let channelId in this._channels) {
-            this.getChannel(channelId).start();
+            this._channels[channelId].start();
         }
     }
 
     addChannel(options) {
         options = isOption(options);
-        fillJson(options, this.taskOptions());
-        _addChannel(options);
+        fillJson(options, this.taskOptions);
+        this._getOrCreateChannel(options);
     }
 
-    _addChannel(options, channelId) {
+    _getOrCreateChannel(options, channelId) {
         channelId = channelId || options.channel;
-        let channel = this.getChannel(channelId);
+        let channel = this._channels[channelId];
         if (!channel) {
             channel = new Channel(options);
             channel.initQueue(this.managerOptions);
@@ -88,7 +86,7 @@ class Manager extends EEmitter {
 
     addProcessor(options, anchor, around) {
         let idx;
-        let processors = this.processFlow().processors;
+        let processors = this.processFlow.processors;
         for (let i = 0; i < processors.length; i++) {
             if (processors[i].name === anchor) {
                 idx = i;
@@ -96,7 +94,7 @@ class Manager extends EEmitter {
             }
         }
         if (idx === undefined) {
-            this.processFlow().add(new Processor(options));
+            this.processFlow.add(new Processor(options));
             return;
         }
         if (around === 'before') {
@@ -104,7 +102,7 @@ class Manager extends EEmitter {
         } else {
             around = 1;
         }
-        this.processFlow().add(new Processor(options), idx + around);
+        this.processFlow.add(new Processor(options), idx + around);
     }
 
     _regist(task) {
@@ -116,13 +114,10 @@ class Manager extends EEmitter {
         let channelId = task.info.channel;
         if (channelId === 'direct')
             return task.execute();
-        let channel = this._addChannel(self.managerOptions, channelId);
+        let channel = this._getOrCreateChannel(self.managerOptions, channelId);
         let priority = Math.floor(Number(task.info.priority));
         channel.enqueue(task, priority);
     }
-
-
-
 
     done(channelId) {
         this._unfinishedTaskNum--;
@@ -133,7 +128,7 @@ class Manager extends EEmitter {
         if (channelId == 'direct') {
             return;
         }
-        let channel = this.getChannel(channelId);
+        let channel = this._channels[channelId];
         channel.done();
         let task = null;
         if (channel.size() || !this._loadbalance)
@@ -145,28 +140,24 @@ class Manager extends EEmitter {
         channel.enqueue(task, priority);
     }
 
-    queueSize() {
+    stats() {
         let cnt = 0;
         for (let channelId in this._channels) {
-            cnt += this.getChannel(channelId).size();
+            cnt += this._channels[channelId].size();
         }
-        return cnt;
-    }
-    getChannel(channelId) {
-        return this._channels[channelId];
+        return [cnt, this._unfinishedTaskNum - cnt];
     }
 
     _dequeue() {
         let task;
         for (let channelId in this._channels) {
-            if (this.getChannel(channelId).size() > 1) {
-                task = this.getChannel(channelId).dequeue();
+            if (this._channels[channelId].size() > 1) {
+                task = this._channels[channelId].dequeue();
                 break;
             }
         }
         return task;
     }
-
 }
 
 function _getConfig(config, name) {
