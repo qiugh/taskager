@@ -2,8 +2,8 @@ module.exports = function () {
     return {
         "options": {
             "option1": "not_set",
-            "option2": "value",
-            "optionn": "n"
+            "option2": "defaultvalue2",
+            "optionn": "defaultvaluen"
         },
         "processors": [
             {
