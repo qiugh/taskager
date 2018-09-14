@@ -119,7 +119,12 @@ class Manager extends EEmitter {
         channel.enqueue(task, priority);
     }
 
-    done(channelId) {
+    process(task){
+        this.processFlow.execute(task, task.callback);
+    }
+
+    done(task) {
+        let channelId = task.options.channelId;
         this._unfinishedTaskNum--;
         if (!this._unfinishedTaskNum) {
             this.emit('done');

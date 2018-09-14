@@ -5,8 +5,6 @@ module.exports = function () {
         'autostart': true,
         'priorityrange': 6,
         'returnxargs': true,
-        'loadbalance': true,
-        'option1': 'defaultvalue1',
-        'optionn': 'defaultvaluen'
+        'loadbalance': true
     };
 };
