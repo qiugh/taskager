@@ -5,7 +5,7 @@ let Manager = require('./index');
 
 let optionsManager = new Manager({
     loadbalance: true,
-    returnxargs: false,
+    returnxargs: true,
     autostart: false,
     ratelimit: 2,
     priorityrange: 2,
@@ -36,9 +36,12 @@ let task2 = {
     p2: 'task2p22222'
 }
 
+i=0
+
 optionsManager.on('queue', (task, next) => {
 
     //throw new Error('test')
+    console.log('queue',++i, task)
     next();
 })
 
@@ -53,8 +56,10 @@ optionsManager.on('done', () => {
 
 optionsManager.queue(task2, function (err, res) {
 
-    let tt = res[res.length - 1].result;
-    console.log(undefined, tt.info['channel'])
+    console.log(res)
+    //let tt = res[res.length - 1].result;
+    let tt =res
+    console.log(undefined, tt.options['channel'])
     tt.done()
 })
 
@@ -62,12 +67,15 @@ for (let i = 0; i < 5; i++) {
     optionsManager.queue({ channel: 1 }, function (err, res) {
 
 
-        let tt = res[res.length - 1].result;
-        console.log(1, tt.info.channel)
+        //let tt = res[res.length - 1].result;
+        let tt = res
+        console.log(1, tt.options.channel)
+        console.log(tt)
         tt.done()
     })
 }
 
+console.log('ready start')
 optionsManager.start();
 
 // optionsManager.getChannel('1').start()

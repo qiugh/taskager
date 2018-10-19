@@ -14,42 +14,39 @@ class Manager extends EEmitter {
         let self = this;
         options = isOption(options);
 
-        self._channels = {};
-        self._unfinishedTaskNum = 0;
-        self._loadbalance = options.loadbalance;
-        self.processFlow = new Flow({
-            returnXargs: options.returnxargs
-        });
+        self.taskOptions = _getConfig(options, 'task');
+        self.managerOptions = _getConfig(options, 'manager');
 
-        let [taskConfig, managerConfig] = [
-            'task',
-            'manager'
-        ].map(name => {
-            return _getConfig(options.config, name);
-        });
-
-        self.managerOptions = managerConfig;
-        self.taskOptions = taskConfig.options;
-
-        taskConfig.processors.forEach(processor => {
-            if (!self.managerOptions.hasOwnProperty(processor.name)) {
-                self.managerOptions[processor.name] = NOT_SET;
-            }
-            self.processFlow.add(new Processor(processor));
-        });
         overrideJson(self.taskOptions, options);
         overrideJson(self.managerOptions, options);
+
+        self._channels = {};
+        self._unfinishedTaskNum = 0;
+        console.log(self.managerOptions.returnxargs)
+        self.processFlow = new Flow({
+            returnXargs: self.managerOptions.returnxargs
+        });
+
+        let processors = _getConfig(options, 'process');
+        processors.forEach(proc => {
+            if (!self.managerOptions.hasOwnProperty(proc.name)) {
+                self.managerOptions[proc.name] = NOT_SET;
+            }
+            self.processFlow.add(new Processor(proc));
+        });
     }
 
     queue(taskOptions, callback) {
-        taskOptions = isOption(taskOptions);
         let self = this;
+        taskOptions = isOption(taskOptions);
         let task = taskOptions;
         if (!(taskOptions instanceof Task)) {
+            
             fillJson(taskOptions, self.taskOptions);
             fillJson(taskOptions, self.managerOptions);
-            let options = divideJson(taskOptions, self.taskOptions);
-            task = new Task(options, taskOptions, callback);
+
+            //let options = divideJson(taskOptions, self.taskOptions);
+            task = new Task(taskOptions, callback);
         }
         if (!self.listeners('queue').length) {
             self._regist(task);
@@ -111,11 +108,11 @@ class Manager extends EEmitter {
             return self;
         }
         this._unfinishedTaskNum++;
-        let channelId = task.info.channel;
+        let channelId = task.options.channel;
         if (channelId === 'direct')
             return task.execute();
         let channel = this._getOrCreateChannel(self.managerOptions, channelId);
-        let priority = Math.floor(Number(task.info.priority));
+        let priority = Math.floor(Number(task.options.priority));
         channel.enqueue(task, priority);
     }
 
@@ -135,13 +132,14 @@ class Manager extends EEmitter {
         }
         let channel = this._channels[channelId];
         channel.done();
-        let task = null;
-        if (channel.size() || !this._loadbalance)
+
+        task = null;
+        if (channel.size() || !this.managerOptions.loadbalance)
             return;
         if (!(task = this._dequeue()))
             return;
-        task.info.channel = channelId;
-        let priority = Math.floor(Number(task.info.priority));
+        task.options.channel = channelId;
+        let priority = Math.floor(Number(task.options.priority));
         channel.enqueue(task, priority);
     }
 
@@ -165,8 +163,9 @@ class Manager extends EEmitter {
     }
 }
 
-function _getConfig(config, name) {
-    config = Path.resolve(config + '', './' + name + '.js');
+function _getConfig(options, name) {
+
+    config = Path.resolve(options.config + '', './' + name + '.js');
     try {
         config = require(config);
     } catch (e) {

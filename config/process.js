@@ -5,7 +5,7 @@ module.exports = function () {
             "asyn": false,
             "func": function (task) {
                 let processor = 'p1'
-                console.log('flow <' + processor + '> with value: <' + task.info[processor] + '>.');
+                console.log('flow <' + processor + '> with value: <' + task.options[processor] + '>.');
             }
         },
         {
@@ -13,7 +13,7 @@ module.exports = function () {
             "asyn": false,
             "func": function (task) {
                 let processor = 'p2'
-                console.log('flow <' + processor + '> with value: <' + task.info[processor] + '>.');
+                console.log('flow <' + processor + '> with value: <' + task.options[processor] + '>.');
             }
         },
         {
@@ -21,7 +21,7 @@ module.exports = function () {
             "asyn": true,
             "func": function (task, callback) {
                 let processor = 'p3'
-                console.log('flow <' + processor + '> with value: <' + task.info[processor] + '>.');
+                console.log('flow <' + processor + '> with value: <' + task.options[processor] + '>.');
                 setTimeout(callback, 2000, null, task)
             }
         }
