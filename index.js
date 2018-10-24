@@ -121,7 +121,7 @@ class Manager extends EEmitter {
     }
 
     done(task) {
-        let channelId = task.options.channelId;
+        let channelId = task.options.channel;
         this._unfinishedTaskNum--;
         if (!this._unfinishedTaskNum) {
             this.emit('done');
