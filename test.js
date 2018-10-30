@@ -4,7 +4,7 @@ let Manager = require('./index');
 //let noOptionsManager = new Manager();
 
 let optionsManager = new Manager({
-    loadbalance: true,
+    loadbalance: false,
     returnxargs: true,
     autostart: false,
     ratelimit: 2,
@@ -41,7 +41,7 @@ i=0
 optionsManager.on('queue', (task, next) => {
 
     //throw new Error('test')
-    console.log('queue',++i, task)
+    console.log('queue',++i)
     next();
 })
 
@@ -56,7 +56,7 @@ optionsManager.on('done', () => {
 
 optionsManager.queue(task2, function (err, res) {
 
-    console.log(res)
+    //console.log(res)
     //let tt = res[res.length - 1].result;
     let tt =res
     console.log(undefined, tt.options['channel'])
@@ -70,7 +70,7 @@ for (let i = 0; i < 5; i++) {
         //let tt = res[res.length - 1].result;
         let tt = res
         console.log(1, tt.options.channel)
-        console.log(tt)
+        //console.log(tt)
         tt.done()
     })
 }

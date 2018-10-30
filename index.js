@@ -21,8 +21,9 @@ class Manager extends EEmitter {
         overrideJson(self.managerOptions, options);
 
         self._channels = {};
+        self._finishedTaskNum = 0;
         self._unfinishedTaskNum = 0;
-        console.log(self.managerOptions.returnxargs)
+
         self.processFlow = new Flow({
             returnXargs: self.managerOptions.returnxargs
         });
@@ -121,6 +122,7 @@ class Manager extends EEmitter {
     }
 
     done(task) {
+        this._finishedTaskNum++;
         let channelId = task.options.channel;
         this._unfinishedTaskNum--;
         if (!this._unfinishedTaskNum) {
@@ -148,7 +150,7 @@ class Manager extends EEmitter {
         for (let channelId in this._channels) {
             cnt += this._channels[channelId].size();
         }
-        return [cnt, this._unfinishedTaskNum - cnt];
+        return [this._finishedTaskNum, cnt, this._unfinishedTaskNum - cnt];
     }
 
     _dequeue() {
