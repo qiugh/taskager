@@ -13,17 +13,14 @@ class Manager extends EEmitter {
         super();
         let self = this;
         options = isOption(options);
-
         self.taskOptions = _getConfig(options, 'task');
         self.managerOptions = _getConfig(options, 'manager');
-
         overrideJson(self.taskOptions, options);
         overrideJson(self.managerOptions, options);
 
         self._channels = {};
         self._finishedTaskNum = 0;
         self._unfinishedTaskNum = 0;
-
         self.processFlow = new Flow({
             returnXargs: self.managerOptions.returnxargs
         });
@@ -42,11 +39,8 @@ class Manager extends EEmitter {
         taskOptions = isOption(taskOptions);
         let task = taskOptions;
         if (!(taskOptions instanceof Task)) {
-            
             fillJson(taskOptions, self.taskOptions);
             fillJson(taskOptions, self.managerOptions);
-
-            //let options = divideJson(taskOptions, self.taskOptions);
             task = new Task(taskOptions, callback);
         }
         if (!self.listeners('queue').length) {
@@ -111,7 +105,7 @@ class Manager extends EEmitter {
         this._unfinishedTaskNum++;
         let channelId = task.options.channel;
         if (channelId === 'direct')
-            return task.execute();
+            return task._execute();
         let channel = this._getOrCreateChannel(self.managerOptions, channelId);
         let priority = Math.floor(Number(task.options.priority));
         channel.enqueue(task, priority);
