@@ -1,6 +1,8 @@
 
 # Taskager - Simple Task Manager
 
+It's a manager for controlling execution of task in frequency and concurrency.
+
 ***
 
 ## Super simple to use
@@ -30,17 +32,8 @@ taskager.queue(taskinfo, function callback(err, task){
   * [manager module](#manager-module)
   * [process module](#process-module)
   * [channel module](#channel-module)
-- [HTTP Authentication](#http-authentication)
-- [Custom HTTP Headers](#custom-http-headers)
-- [OAuth Signing](#oauth-signing)
-- [Proxies](#proxies)
-- [Unix Domain Sockets](#unix-domain-sockets)
-- [TLS/SSL Protocol](#tlsssl-protocol)
-- [Support for HAR 1.2](#support-for-har-12)
-- [**All Available Options**](#requestoptions-callback)
 
-Taskager means task and manager.
-It is a scheduler for controlling execution of task in frequency and concurrency.
+
 # Install
 ```
 npm install taskager
