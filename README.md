@@ -26,7 +26,7 @@ taskager.queue(taskinfo, function callback(err, task){
 - [Options](#options)
   * [task options](#task-options)
   * [manager options](#manager-options)
-  * [process options](#process-options)
+  * [process flow options](#process-flow-options)
 - [Basic usage](#basic-usage)
   * [task module](#task-module)
   * [manager module](#manager-module)
@@ -54,7 +54,7 @@ They are initialized by the file config/task.js.
 ```
 
 ## manager options
-Manager options represent a set of acceptable parameters for managing tasks.
+Manager options represent a set of acceptable parameters for managing tasks.  
 They are initialized by the file config/manager.js. 
 ```js
 {
@@ -67,7 +67,10 @@ They are initialized by the file config/manager.js.
 }
 ```
 
-## process options
+## process flow options
+Process flow means the actual actions for completing the task corresponding to a series of processing functions whose order determines the execute sequence  
+They are initialized by the file config/process.js.
+
 # Basic usage
 ## task module
 ## manager module
