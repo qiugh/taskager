@@ -20,8 +20,11 @@ taskager.queue(taskinfo, function callback(err, task){
 
 ## Table of contents
 
-- [install](#install)
-- [Promises & Async/Await](#promises--asyncawait)
+- [Install](#install)
+- [Options](#options)
+  * [task options](#task-options)
+  * [manager options](#manager-options)
+  * [process options](#process-options)
 - [Forms](#forms)
 - [HTTP Authentication](#http-authentication)
 - [Custom HTTP Headers](#custom-http-headers)
@@ -38,7 +41,10 @@ It is a scheduler for controlling execution of task in frequency and concurrency
 ```
 npm install taskager
 ```
-
+# options
+## task options
+## manager options
+## process options
 # 模型
 任务：由参数集和回调函数构成，自我控制任务的结束行为
 管理器：通过控制策略控制任务的总体执行频率或者并发量。
