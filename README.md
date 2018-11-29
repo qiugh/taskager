@@ -12,7 +12,7 @@ let taskinfo = {
     parameter1 : 'value1',
     parametern : 'valuen'
 };
-taskager.queue(taskinfo,function callback(err,task){
+taskager.queue(taskinfo, function callback(err, task){
     console.log(task);
     task.done();
 });
@@ -20,7 +20,7 @@ taskager.queue(taskinfo,function callback(err,task){
 
 ## Table of contents
 
-- [Streaming](#streaming)
+- [install](#install)
 - [Promises & Async/Await](#promises--asyncawait)
 - [Forms](#forms)
 - [HTTP Authentication](#http-authentication)
@@ -34,8 +34,10 @@ taskager.queue(taskinfo,function callback(err,task){
 
 Taskager means task and manager.
 It is a scheduler for controlling execution of task in frequency and concurrency.
-# 安装 
+# install
+```
 npm install taskager
+```
 
 # 模型
 任务：由参数集和回调函数构成，自我控制任务的结束行为
