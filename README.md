@@ -1,7 +1,7 @@
 
 # Taskager - Simple Task Manager
 
-It's a manager for controlling execution of task in frequency and concurrency.
+It's a manager for controlling execution of tasks in frequency and concurrency.
 
 ***
 
@@ -70,6 +70,15 @@ They are initialized by the file config/manager.js.
 ## process flow options
 Process flow means the actual actions for completing the task corresponding to a series of processing functions whose order determines the execute sequence  
 They are initialized by the file config/process.js.
+```
+{
+    "name": "processor1", //processor name
+    "asyn": false, //is asynchronous or not
+    "func": function (task) { //do something according to value
+        console.log('<processor1> with value: <' + task.options["processor1"] + '>.');
+    }
+}
+```
 
 # Basic usage
 ## task module
