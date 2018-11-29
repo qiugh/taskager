@@ -40,7 +40,7 @@ npm install taskager
 ```
 # options
 
-The parameter naming for each type of configuration is unique by default.
+**_The parameter naming for each type of configuration is unique by default._**
 
 ## task options
 Task options represent a set of acceptable parameters for completing the task.  
