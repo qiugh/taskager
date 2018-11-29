@@ -25,7 +25,11 @@ taskager.queue(taskinfo, function callback(err, task){
   * [task options](#task-options)
   * [manager options](#manager-options)
   * [process options](#process-options)
-- [Forms](#forms)
+- [Basic usage](#basic-usage)
+  * [task module](#task-module)
+  * [manager module](#manager-module)
+  * [process module](#process-module)
+  * [channel module](#channel-module)
 - [HTTP Authentication](#http-authentication)
 - [Custom HTTP Headers](#custom-http-headers)
 - [OAuth Signing](#oauth-signing)
@@ -37,7 +41,7 @@ taskager.queue(taskinfo, function callback(err, task){
 
 Taskager means task and manager.
 It is a scheduler for controlling execution of task in frequency and concurrency.
-# install
+# Install
 ```
 npm install taskager
 ```
@@ -45,7 +49,11 @@ npm install taskager
 ## task options
 ## manager options
 ## process options
-# 模型
+# Basic usage
+## task module
+## manager module
+## process module
+## channel module
 任务：由参数集和回调函数构成，自我控制任务的结束行为
 管理器：通过控制策略控制任务的总体执行频率或者并发量。
 执行通道：不通的任务可以配置不同的控制策略，为了让管理器能够同时兼容多个策略，引入通道的概念。任务注册时，会被分配到指定的通道下。
