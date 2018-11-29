@@ -35,7 +35,7 @@ taskager.queue(taskinfo, function callback(err, task){
 
 
 # Install
-```
+```sh
 npm install taskager
 ```
 # options
@@ -45,7 +45,7 @@ npm install taskager
 ## task options
 Task options represent a set of acceptable parameters for completing the task.  
 They are initialized by the file config/task.js.  
-```
+```js
 {
     'option1': 'defaultvalue1',
     'optioni': 'Not_Set', //means this parameter has no default value
@@ -53,9 +53,20 @@ They are initialized by the file config/task.js.
 }
 ```
 
-
-
 ## manager options
+Manager options represent a set of acceptable parameters for managing tasks.
+They are initialized by the file config/manager.js. 
+```js
+{
+    'ratelimit': 2000, //means that the execution time interval of two tasks is at least 2000 seconds for channel
+    'concurrency': 5, //means that there is no more than 5 tasks at the same time for channel
+    'autostart': true, //means that manager will start automatically when task is queued
+    'priorityrange': 6, //priority section for all tasks is [0, 5]
+    'returnxargs': true, //means that the process flow in manager will return the given task
+    'loadbalance': true //channel with empty queue will do task from other channel
+}
+```
+
 ## process options
 # Basic usage
 ## task module
