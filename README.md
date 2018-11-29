@@ -1,3 +1,37 @@
+
+# Taskager - Simple Task Manager
+
+***
+
+## Super simple to use
+
+```js
+let Taskager = require('taskager');
+let taskager = new Taskager();
+let taskinfo = {
+    parameter1 : 'value1',
+    parametern : 'valuen'
+};
+taskager.queue(taskinfo,function callback(err,task){
+    console.log(task);
+    task.done();
+});
+```
+
+## Table of contents
+
+- [Streaming](#streaming)
+- [Promises & Async/Await](#promises--asyncawait)
+- [Forms](#forms)
+- [HTTP Authentication](#http-authentication)
+- [Custom HTTP Headers](#custom-http-headers)
+- [OAuth Signing](#oauth-signing)
+- [Proxies](#proxies)
+- [Unix Domain Sockets](#unix-domain-sockets)
+- [TLS/SSL Protocol](#tlsssl-protocol)
+- [Support for HAR 1.2](#support-for-har-12)
+- [**All Available Options**](#requestoptions-callback)
+
 Taskager means task and manager.
 It is a scheduler for controlling execution of task in frequency and concurrency.
 # 安装 
