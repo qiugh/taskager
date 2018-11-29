@@ -39,7 +39,22 @@ taskager.queue(taskinfo, function callback(err, task){
 npm install taskager
 ```
 # options
+
+The parameter naming for each type of configuration is unique by default.
+
 ## task options
+Task options represent a set of acceptable parameters for completing the task.  
+They are initialized by the file config/task.js.  
+```
+{
+    'option1': 'defaultvalue1',
+    'optioni': 'Not_Set', //means this parameter has no default value
+    'optionn': 'defaultvaluen'
+}
+```
+
+
+
 ## manager options
 ## process options
 # Basic usage
