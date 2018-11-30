@@ -1,23 +1,21 @@
-
 # Taskager - Simple Task Manager
-
-It's a manager for controlling execution of tasks in frequency and concurrency.
-
 ***
-
 ## Super simple to use
-
 ```js
 let Taskager = require('taskager');
+let Task = Taskager.Task;
+
 let taskager = new Taskager();
 let taskInfo = {
     parameter1 : 'value1',
     parametern : 'valuen'
 };
-taskager.queue(taskInfo, function callback(err, task){
+let callback = function(err, task){
     console.log(task);
     task.done();
-});
+}
+let task = new Task(taskinfo, callback);
+taskager.queue(task);
 ```
 
 ## Table of contents
@@ -58,12 +56,12 @@ Manager options represent a set of acceptable parameters for managing tasks.
 They are initialized by the file config/manager.js. 
 ```js
 {
-    'ratelimit': 2000, //means that the execution time interval of two tasks is at least 2000 seconds for channel
-    'concurrency': 5, //means that there is no more than 5 tasks at the same time for channel
-    'autostart': true, //means that manager will start automatically when task is queued
+    'ratelimit': 2000, //execution time interval of tasks for channel is at least 2000 milliseconds
+    'concurrency': 5, //there is no more than 5 tasks at the same time for channel
+    'autostart': true, //manager will start automatically when task is queued
     'priorityrange': 6, //priority section for all tasks is [0, 5]
-    'returnxargs': true, //means that the process flow in manager will return the given task
-    'loadbalance': true //channel with empty queue will do task from other channel
+    'returnxargs': true, //the process flow in manager will return the given task
+    'loadbalance': true //channel with empty queue will help other channel do task
 }
 ```
 
@@ -83,8 +81,9 @@ They are initialized by the file config/process.js.
 
 # Basic usage
 ## manager module
-When manager instance is created, three types of parameter is acceptable.
-This stage can override all parameters loaded from file in directory config.
+Manager accepts three types of parameter.  
+This stage can override all parameters loaded from config file.  
+Config file path is determined by parameter named config which is assigned './config/' if it is not set.
 ```
 let globalOpt = {
     'optioni': 'valuei', //set global default value for parameter optioni from task options
@@ -92,12 +91,12 @@ let globalOpt = {
     'processor1': 'valueforprocessor1' //set global default value for parameter processor1 from process flow options
 };
 let taskager = new Taskager(globalOpt);
-taskager.queue({}, function callback(err, task){
+taskager.queue(new Task({}, function callback(err, task){
     console.log(task.options['optioni']); //valuei, it is overridden
     console.log(task.options['optionn']); //defaultvaluen, it is not overridden when manager instace is initialized
     console.log(task.options['processor1']); //valueforprocessor1
     task.done();
-});
+}));
 
 ```
 ## task module
