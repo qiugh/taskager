@@ -92,7 +92,7 @@ let globalOpt = {
     'processor1': 'valueforprocessor1' //set global default value for parameter processor1 from process flow options
 };
 let taskager = new Taskager(globalOpt);
-taskager.queue({},function callback(err,result){
+taskager.queue({}, function callback(err, task){
     console.log(task.options['optioni']); //valuei, it is overridden
     console.log(task.options['optionn']); //defaultvaluen, it is not overridden when manager instace is initialized
     console.log(task.options['processor1']); //valueforprocessor1
