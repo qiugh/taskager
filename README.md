@@ -102,7 +102,9 @@ taskager.queue({}, function callback(err, task){
 ```
 ## task module
 Task consists of taskInfo and callback.  
-TaskInfo is a set of parameters deciding what to be done in the lifecycle. In addition to parameters from task options, TaskInfo can also include channel and prioroty. Channel decides which channel this task will be queued.Priority is just like literal meaning.  
+TaskInfo is a set of parameters deciding what to be done in the lifecycle.  
+In addition to parameters from task options, TaskInfo can also include channel and prioroty.  
+Channel decides which channel this task will be queued.Priority is just like literal meaning.  
 Callback is a function that accepts two parameters deciding what to be done when the task is done.  
 Parameters in taskInfo will reset some task options to new value, but only for this task itself.  
 
