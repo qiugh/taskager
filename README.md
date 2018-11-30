@@ -10,11 +10,11 @@ It's a manager for controlling execution of tasks in frequency and concurrency.
 ```js
 let Taskager = require('taskager');
 let taskager = new Taskager();
-let taskinfo = {
+let taskInfo = {
     parameter1 : 'value1',
     parametern : 'valuen'
 };
-taskager.queue(taskinfo, function callback(err, task){
+taskager.queue(taskInfo, function callback(err, task){
     console.log(task);
     task.done();
 });
@@ -74,15 +74,43 @@ They are initialized by the file config/process.js.
 {
     "name": "processor1", //processor name
     "asyn": false, //is asynchronous or not
-    "func": function (task) { //do something according to value
+    //do something according to value
+    "func": function (task) {
         console.log('<processor1> with value: <' + task.options["processor1"] + '>.');
     }
 }
 ```
 
 # Basic usage
-## task module
 ## manager module
+When manager instance is created, three types of parameter is acceptable.
+This stage can override all parameters loaded from file in directory config.
+```
+let globalOpt = {
+    'optioni': 'valuei', //set global default value for parameter optioni from task options
+    'concurrency': -1, //override original value for parameter concurrency from manager options, -1 means infinity
+    'processor1': 'valueforprocessor1' //set global default value for parameter processor1 from process flow options
+};
+let taskager = new Taskager(globalOpt);
+taskager.queue({},function callback(err,result){
+    console.log(task.options['optioni']); //valuei, it is overridden
+    console.log(task.options['optionn']); //defaultvaluen, it is not overridden when manager instace is initialized
+    console.log(task.options['processor1']); //valueforprocessor1
+    task.done();
+});
+
+```
+## task module
+Task consists of taskInfo and callback.  
+TaskInfo is a set of parameters deciding what to be done in the lifecycle. In addition to parameters from task options, TaskInfo can also include channel and prioroty. Channel decides which channel this task will be queued.Priority is just like literal meaning.  
+Callback is a function that accepts two parameters deciding what to be done when the task is done.  
+Parameters in taskInfo will reset some task options to new value, but only for this task itself.  
+
+```
+let taskInfo = {
+
+};
+```
 ## process module
 ## channel module
 任务：由参数集和回调函数构成，自我控制任务的结束行为
