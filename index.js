@@ -248,4 +248,5 @@ function _mergeJsonBySlave(master, slave) {
     return master;
 }
 
+Manager.Task = Task;
 module.exports = Manager;

@@ -105,14 +105,28 @@ Task consists of taskInfo and callback.
 TaskInfo is a set of parameters deciding what to be done in the lifecycle.  
 In addition to parameters from task options, TaskInfo can also include channel and prioroty.  
 Channel decides which channel this task will be queued.Priority is just like literal meaning.  
-Callback is a function that accepts two parameters deciding what to be done when the task is done.  
+Callback is a function that accepts two parameters deciding what to be done when the task is finished.  
 Parameters in taskInfo will reset some task options to new value, but only for this task itself.  
 
 ```
-let taskInfo = {
 
+let taskInfo = {
+    'channel': 'channel1', //if not set, it will be default channel
+    'priority': 5, //if not set, it will be  Math.floor(priorityrange / 2)
+    'optioni': 'valueiformyself1', //reset optioni for this task itself
+    'processor1': 'valueformyself2', //reset processor1 for this task itself
+    'whatevername': 'whatevervalue' // any other information this task want to transmit
 };
+
+let callback = function(err, task){
+    console.log(task instanceof Task); //true
+    dosomething(task);
+    task.done();
+}
 ```
+every task has one function named done to inform manager that task has been finished so that manager can continue to do the left.  
+It is necessary because manager can not tell when task ends.
+
 ## process module
 ## channel module
 任务：由参数集和回调函数构成，自我控制任务的结束行为
