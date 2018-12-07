@@ -4,24 +4,21 @@ module.exports = function () {
             "name": "p1",
             "asyn": false,
             "func": function (task) {
-                let processor = 'p1'
-                console.log('flow <' + processor + '> with value: <' + task.options[processor] + '>.');
+                console.log('p1 value:' + task.options['p1']);
             }
         },
         {
             "name": "p2",
             "asyn": false,
             "func": function (task) {
-                let processor = 'p2'
-                console.log('flow <' + processor + '> with value: <' + task.options[processor] + '>.');
+                console.log('p2 value:' + task.options['p2']);
             }
         },
         {
             "name": "p3",
             "asyn": true,
             "func": function (task, callback) {
-                let processor = 'p3'
-                console.log('flow <' + processor + '> with value: <' + task.options[processor] + '>.');
+                console.log('p3 value:' + task.options['p3']);
                 setTimeout(callback, 2000, null, task)
             }
         }

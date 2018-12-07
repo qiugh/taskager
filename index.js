@@ -61,7 +61,7 @@ class Manager extends EEmitter {
 
     addChannel(options) {
         options = isOption(options);
-        fillJson(options, this.taskOptions);
+        fillJson(options, this.managerOptions);
         this._getOrCreateChannel(options);
     }
 
