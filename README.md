@@ -137,9 +137,10 @@ let opt = {
 
     }
 };
-taskager.addProcessor(opt); //for more detail info about processor please see [node-processor](http://zzbond.com/node-processor/)
+taskager.addProcessor(opt);
 
 ```
+for more detail info about processor please see [node-processor](http://zzbond.com/node-processor/)
 
 ## channel module
 ```
